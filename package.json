@@ -14,6 +14,7 @@
   "author": "Maximilian Schwarzmüller",
   "license": "ISC",
   "devDependencies": {
+    "@types/jquery": "^3.5.5",
     "lite-server": "^2.5.4"
   }
 }
