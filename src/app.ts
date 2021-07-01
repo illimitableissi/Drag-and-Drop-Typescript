@@ -9,7 +9,25 @@ interface Validatable {
     max?: number;
 }
 
-
+function validate(validateInput: Validatable) {
+    let isValid = true;
+    if (validateInput.required) {
+        isValid = isValid && validateInput.value.toString().trim().length !== 0
+    }
+    if (validateInput.minLength != null && typeof validateInput.value === 'string') {
+        isValid = isValid && validateInput.value.length > validateInput.minLength;
+    }
+    if (validateInput.maxLength != null && typeof validateInput.value === 'string') {
+        isValid = isValid && validateInput.value.length < validateInput.maxLength;
+    }
+    if (validateInput.min != null && typeof validateInput.value === 'number') {
+        isValid = isValid && validateInput.value > validateInput.min;
+    }
+    if (validateInput.max != null && typeof validateInput.value === 'number') {
+        isValid = isValid && validateInput.value < validateInput.max;
+    }
+    return isValid;
+}
 
 //Autobind decorator
 function autobind(
@@ -62,17 +80,29 @@ class ProjectInput {
         const enteredDesciption = this.descriptionElement.value;
         const enteredPeople = this.peopleInputElement.value;
 
-        // if (enteredTitle.trim().length === 0 ||
-        //     enteredDesciption.trim().length === 0 ||
-        //     enteredPeople.trim().length === 0
-        // )
-        if {
-            validate({value: enteredTitle, required: true, minLength: 5}) &&
-            validate({value: enteredDesciption, required: true, minLength: 5}) &&
-            validate({value: enteredPeople, required: true, minLength: 5})
-        } { 
+        const titleValidatable: Validatable = {
+            value: enteredTitle,
+            required: true
+        };
+        const descriptionValidatable: Validatable = {
+            value: enteredDesciption,
+            required: true,
+            minLength: 5
+        };
+        const peopleValidatable: Validatable = {
+            value: +enteredPeople,
+            required: true,
+            min: 1,
+            max: 5
+        };
+
+        if (
+            !validate(titleValidatable) ||
+            !validate(descriptionValidatable) ||
+            !validate(peopleValidatable)
+         ) { 
             alert('invalid input');
-            return
+            return;
         } else {
             return [enteredTitle, enteredDesciption, +enteredPeople]
         }
