@@ -1,6 +1,8 @@
-/// <reference path="base-component.ts" />
+import { Draggable } from "../models/drag-drop.js";
+import { Project } from "../models/project.js";
+import { Component } from "./base-component.js";
+import { autobind } from "../decorators/autobind.js";
 
-namespace App {
     //Project Item Class
     export class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> 
         implements Draggable {
@@ -42,4 +44,3 @@ namespace App {
             this.element.querySelector('p')!.textContent = this.project.description;
         }
     }
-}

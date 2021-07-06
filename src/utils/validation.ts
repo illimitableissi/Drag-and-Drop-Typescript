@@ -1,5 +1,3 @@
-namespace App {
-    
     //Validaton 
     // a "?" makes the property optional
    export  interface Validatable {
@@ -30,5 +28,3 @@ namespace App {
         }
         return isValid;
     }
-
-}
