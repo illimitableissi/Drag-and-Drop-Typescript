@@ -68,16 +68,16 @@ function validate(validateInput: Validatable) {
         isValid = isValid && validateInput.value.toString().trim().length !== 0
     }
     if (validateInput.minLength != null && typeof validateInput.value === 'string') {
-        isValid = isValid && validateInput.value.length > validateInput.minLength;
+        isValid = isValid && validateInput.value.length >= validateInput.minLength;
     }
     if (validateInput.maxLength != null && typeof validateInput.value === 'string') {
-        isValid = isValid && validateInput.value.length < validateInput.maxLength;
+        isValid = isValid && validateInput.value.length <= validateInput.maxLength;
     }
     if (validateInput.min != null && typeof validateInput.value === 'number') {
-        isValid = isValid && validateInput.value > validateInput.min;
+        isValid = isValid && validateInput.value >= validateInput.min;
     }
     if (validateInput.max != null && typeof validateInput.value === 'number') {
-        isValid = isValid && validateInput.value < validateInput.max;
+        isValid = isValid && validateInput.value <= validateInput.max;
     }
     return isValid;
 }
@@ -109,7 +109,7 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement>{
         templateId: string, 
         hostElementId: string, 
         insertAtStart: boolean,
-        newElementId?:string,
+        newElementId?:string
         ){
         this.templateElement = document.getElementById(templateId)! as HTMLTemplateElement;
         this.hostElement = document.getElementById(hostElementId)! as T;
@@ -127,7 +127,10 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement>{
     }
 
     private attach(insertAtBeginning: boolean){
-        this.hostElement.insertAdjacentElement(insertAtBeginning ? 'afterbegin' : 'beforeend', this.element);
+        this.hostElement.insertAdjacentElement(
+            insertAtBeginning ? 'afterbegin' : 'beforeend', 
+            this.element
+            );
     }
 
     abstract configure(): void;
@@ -135,9 +138,31 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement>{
 }
 
 //Project Item Class
-class ProjectItem extends Component<> {
-    constructor() {
-        super();
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+    private project: Project;
+
+    public get persons() : string {
+        if (this.project.people === 1) {
+            return '1 person'
+        }  else {
+            return `${this.project.people} people`;
+        }
+    }
+
+    constructor(hostId: string, project: Project) {
+        super('single-project', hostId, false, project.id);
+        this.project = project;
+
+        this.configure();
+        this.renderContent();
+    }
+
+    configure(){};
+
+    renderContent(){
+        this.element.querySelector('h2')!.textContent = this.project.title;
+        this.element.querySelector('h3')!.textContent = this.persons + ' assigned';
+        this.element.querySelector('p')!.textContent = this.project.description;
     }
 }
 
@@ -159,7 +184,7 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement>{
                 if (this.type === 'active'){
                     return prj.status === ProjectStatus.Active;
                 }
-                return prj.status === ProjectStatus.Finished
+                return prj.status === ProjectStatus.Finished;
                 });
             this.assignedProjects = relevantProjects;
             this.renderProjects();
@@ -169,16 +194,15 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement>{
     renderContent(){
         const listId = `${this.type}-projects-list`;
         this.element.querySelector('ul')!.id = listId;
-        this.element.querySelector('h2')!.textContent = this.type.toUpperCase() + ' PROJECTS';
+        this.element.querySelector('h2')!.textContent = 
+            this.type.toUpperCase() + ' PROJECTS';
     }
 
     private renderProjects(){
         const listEl = document.getElementById(`${this.type}-projects-list`)! as HTMLUListElement;
         listEl.innerHTML = '';
         for (const prjItem of this.assignedProjects) {
-            const listItem = document.createElement('li')
-            listItem.textContent = prjItem.title;
-            listEl.appendChild(listItem)
+            new ProjectItem(this.element.querySelector('ul')!.id, prjItem);
         }
     }
 }
@@ -190,7 +214,7 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
     peopleInputElement: HTMLInputElement;
 
     constructor(){
-        super('project-template', 'app', true,'user-input');
+        super('project-input', 'app', true,'user-input');
         // Exclamation point means it will not be null
         this.titleInputElement = this.element.querySelector('#title')! as HTMLInputElement;
         this.descriptionElement = this.element.querySelector('#description')! as HTMLInputElement;
@@ -240,9 +264,9 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
     }
 
     private clearInputs() {
-        this.titleInputElement.value = '',
-        this.descriptionElement.value = '',
-        this.peopleInputElement.value = ''
+        this.titleInputElement.value = '';
+        this.descriptionElement.value = '';
+        this.peopleInputElement.value = '';
     }
 
     @autobind
