@@ -1,113 +1,121 @@
-// Drag & Drop Interfaces
-interface  Draggable {
-    dragStartHandler(event: DragEvent): void;
-    dragEndHandler(event: DragEvent): void;
-}
+// - '///' special TS syntax
 
-interface DragTarget {
-    dragOverHandler(event: DragEvent): void;
-    dropHandler(event: DragEvent): void;
-    dragLeaveHandler(event: DragEvent): void;
-}
+/// <reference path="drag-drop-interfaces.ts" />
+/// <reference path="project-model.ts" />
+/// <reference path="project-state.ts" />
+/// <reference path="validation.ts" />
 
+namespace App {   
+
+//Drag & Drop interfaces
+// interface  Draggable {
+//     dragStartHandler(event: DragEvent): void;
+//     dragEndHandler(event: DragEvent): void;
+// }
+
+// interface DragTarget {
+//     dragOverHandler(event: DragEvent): void;
+//     dropHandler(event: DragEvent): void;
+//     dragLeaveHandler(event: DragEvent): void;
+// }
 
 // Project Type
-enum ProjectStatus {Active, Finished}
+// enum ProjectStatus {Active, Finished}
 
-class Project {
-    constructor (
-        public id: string, 
-        public title: string, 
-        public description: string, 
-        public people: number, 
-        public status: ProjectStatus
-        ) {}
-}
+// class Project {
+//     constructor (
+//         public id: string, 
+//         public title: string, 
+//         public description: string, 
+//         public people: number, 
+//         public status: ProjectStatus
+//         ) {}
+// }
 
 //Project State Management
-type Listener<T> = (items: T[]) => void;
+// type Listener<T> = (items: T[]) => void;
 
-class State<T>{
-    protected listeners: Listener<T>[] = [];
+// class State<T>{
+//     protected listeners: Listener<T>[] = [];
 
-    addListener(listenerFn: Listener<T>) {
-        this.listeners.push(listenerFn);
-    }
-}
+//     addListener(listenerFn: Listener<T>) {
+//         this.listeners.push(listenerFn);
+//     }
+// }
 
-class ProjectState extends State<Project> {
-    private projects: Project[] = [];
-    private static instance: ProjectState;
+// class ProjectState extends State<Project> {
+//     private projects: Project[] = [];
+//     private static instance: ProjectState;
 
-    private constructor(){
-        super();
-    }
+//     private constructor(){
+//         super();
+//     }
 
-    static getInstance() {
-        if (this.instance) {
-            return this.instance;
-        }
-        this.instance = new ProjectState();
-        return this.instance
+//     static getInstance() {
+//         if (this.instance) {
+//             return this.instance;
+//         }
+//         this.instance = new ProjectState();
+//         return this.instance
 
-    }
+//     }
 
 
-    addProject(title: string, description: string, numOfPeople: number) {
-        const newProject = new Project(Math.random().toString(), title, description, numOfPeople, ProjectStatus.Active);
-        this.projects.push(newProject);
-        for (const listenerFn of this.listeners) {
-            listenerFn(this.projects.slice());
-        }
-    }
+//     addProject(title: string, description: string, numOfPeople: number) {
+//         const newProject = new Project(Math.random().toString(), title, description, numOfPeople, ProjectStatus.Active);
+//         this.projects.push(newProject);
+//         for (const listenerFn of this.listeners) {
+//             listenerFn(this.projects.slice());
+//         }
+//     }
 
-    moveProject(projectId: string, newStatus: ProjectStatus) {
-       const project = this.projects.find(prj => prj.id === projectId);
-       if (project && project.status !== newStatus) {
-           project.status = newStatus;
-           this.updateListeners();
-       }
-    }
+//     moveProject(projectId: string, newStatus: ProjectStatus) {
+//        const project = this.projects.find(prj => prj.id === projectId);
+//        if (project && project.status !== newStatus) {
+//            project.status = newStatus;
+//            this.updateListeners();
+//        }
+//     }
 
-    private updateListeners () {
-        for (const listenerFn of this.listeners) {
-            listenerFn(this.projects.slice());
-        }
-    }
-}
+//     private updateListeners () {
+//         for (const listenerFn of this.listeners) {
+//             listenerFn(this.projects.slice());
+//         }
+//     }
+// }
 
-const projectState = ProjectState.getInstance();
+// const projectState = ProjectState.getInstance();
 
-//Validaton 
-// a "?" makes the property optional
-interface Validatable {
-    value: string | number;
-    required?: boolean;
-    minLength?: number;
-    maxLength?: number;
-    min?: number;
-    max?: number;
-}
+// //Validaton 
+// // a "?" makes the property optional
+// interface Validatable {
+//     value: string | number;
+//     required?: boolean;
+//     minLength?: number;
+//     maxLength?: number;
+//     min?: number;
+//     max?: number;
+// }
 
-function validate(validateInput: Validatable) {
-    let isValid = true;
-    if (validateInput.required) {
-        isValid = isValid && validateInput.value.toString().trim().length !== 0
-    }
-    if (validateInput.minLength != null && typeof validateInput.value === 'string') {
-        isValid = isValid && validateInput.value.length >= validateInput.minLength;
-    }
-    if (validateInput.maxLength != null && typeof validateInput.value === 'string') {
-        isValid = isValid && validateInput.value.length <= validateInput.maxLength;
-    }
-    if (validateInput.min != null && typeof validateInput.value === 'number') {
-        isValid = isValid && validateInput.value >= validateInput.min;
-    }
-    if (validateInput.max != null && typeof validateInput.value === 'number') {
-        isValid = isValid && validateInput.value <= validateInput.max;
-    }
-    return isValid;
-}
+// function validate(validateInput: Validatable) {
+//     let isValid = true;
+//     if (validateInput.required) {
+//         isValid = isValid && validateInput.value.toString().trim().length !== 0
+//     }
+//     if (validateInput.minLength != null && typeof validateInput.value === 'string') {
+//         isValid = isValid && validateInput.value.length >= validateInput.minLength;
+//     }
+//     if (validateInput.maxLength != null && typeof validateInput.value === 'string') {
+//         isValid = isValid && validateInput.value.length <= validateInput.maxLength;
+//     }
+//     if (validateInput.min != null && typeof validateInput.value === 'number') {
+//         isValid = isValid && validateInput.value >= validateInput.min;
+//     }
+//     if (validateInput.max != null && typeof validateInput.value === 'number') {
+//         isValid = isValid && validateInput.value <= validateInput.max;
+//     }
+//     return isValid;
+// }
 
 //Autobind decorator
 function autobind(
@@ -350,6 +358,8 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
 
 }
 
-const prjInput = new ProjectInput;
-const activePrjList= new ProjectList('active');
-const finishedPrjList= new ProjectList('finished');
+new ProjectInput;
+new ProjectList('active');
+new ProjectList('finished');
+
+}
